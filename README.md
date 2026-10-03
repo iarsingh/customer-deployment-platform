@@ -41,6 +41,18 @@ The platform renders those boxes. It does not apply them. Argo CD is the only wr
 
 Read [docs/customer-scenario.md](docs/customer-scenario.md) before the code. The constraint that deleted the "Apply" button is in that file.
 
+## Run the laptop proof
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r platform-api/requirements.txt
+PYTHONPATH=platform-api pytest platform-api/tests
+./demo/run.sh
+```
+
+`./demo/run.sh` submits one dev service, renders the repository, refuses `prod`, and refuses the rehearsed bad manifest. The recording script is [demo/walkthrough.md](demo/walkthrough.md).
+
 ## Run the API
 
 GCP is not required.
