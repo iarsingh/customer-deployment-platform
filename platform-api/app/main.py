@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, PlainTextResponse
 from pydantic import BaseModel, Field
 
 from app.generate import render_service
@@ -28,6 +28,22 @@ def create_app(data_dir: Path | None = None, portal_dir: Path | None = None) -> 
     @app.get("/healthz")
     def healthz():
         return {"status": "ok"}
+
+    @app.get("/metrics")
+    def metrics():
+        rows = app.state.store.list()
+        accepted = sum(1 for row in rows if row["status"] == "accepted")
+        refused = sum(1 for row in rows if row["status"] == "refused")
+        body = "\n".join(
+            [
+                "# HELP meridian_service_requests_total Stored service decisions.",
+                "# TYPE meridian_service_requests_total gauge",
+                f'meridian_service_requests_total{{status="accepted"}} {accepted}',
+                f'meridian_service_requests_total{{status="refused"}} {refused}',
+                "",
+            ]
+        )
+        return PlainTextResponse(body)
 
     @app.get("/")
     def portal():

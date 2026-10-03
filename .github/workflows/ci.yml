@@ -60,3 +60,19 @@ jobs:
           fi
           grep -q 'cpu: 100m' /tmp/rendered.yaml
           grep -q 'kind: HorizontalPodAutoscaler' /tmp/rendered.yaml
+
+  policy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Refuse the rehearsed bad deployment
+        run: |
+          python -m pip install -r platform-api/requirements.txt
+          if python policies/check_policy.py demo/failure/billing-callback-bad.yaml; then
+            echo "bad deployment was accepted" >&2
+            exit 1
+          fi
+          PYTHONPATH=platform-api:. pytest platform-api/tests/test_policy.py -q

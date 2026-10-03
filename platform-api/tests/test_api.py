@@ -103,6 +103,21 @@ def test_accepted_request_renders_a_repository(tmp_path):
     assert (tmp_path / body["artifacts"]["gitops_application"]).exists()
 
 
+def test_metrics_count_decisions(tmp_path):
+    client = client_for(tmp_path)
+    client.post(
+        "/services",
+        json={"name": "billing-callback", "team": "payments", "runtime": "python", "environment": "dev"},
+    )
+    client.post(
+        "/services",
+        json={"name": "billing-callback", "team": "payments", "runtime": "python", "environment": "prod"},
+    )
+    body = client.get("/metrics").text
+    assert 'meridian_service_requests_total{status="accepted"} 1' in body
+    assert 'meridian_service_requests_total{status="refused"} 1' in body
+
+
 def test_unknown_id_is_404(tmp_path):
     client = client_for(tmp_path)
     assert client.get("/services/svc-missing").status_code == 404

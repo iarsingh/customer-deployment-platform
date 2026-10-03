@@ -64,7 +64,18 @@ terraform fmt -check -recursive terraform
 terraform -chdir=terraform/environments/local init -backend=false
 terraform -chdir=terraform/environments/local validate
 helm template billing-callback helm/service -f helm/service/values.yaml
+python policies/check_policy.py demo/failure/billing-callback-bad.yaml
 ```
+
+The last command is supposed to fail. That manifest uses the tag `latest` and sets no limits. The runbook is [docs/troubleshooting.md](docs/troubleshooting.md).
+
+Prometheus and Grafana come up with the API:
+
+```bash
+docker compose up --build
+```
+
+Grafana is on port 3000 and already has the Meridian dashboard. The API metric is `meridian_service_requests_total`.
 
 ## Layout
 

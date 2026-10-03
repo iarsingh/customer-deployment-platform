@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: billing-callback
+  namespace: payments-dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: billing-callback
+  template:
+    metadata:
+      labels:
+        app: billing-callback
+    spec:
+      containers:
+        - name: billing-callback
+          image: billing-callback:latest
