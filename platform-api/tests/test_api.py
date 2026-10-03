@@ -80,6 +80,29 @@ def test_same_idempotency_key_returns_the_original(tmp_path):
     assert len(client.get("/services").json()["services"]) == 1
 
 
+def test_accepted_request_renders_a_repository(tmp_path):
+    client = client_for(tmp_path)
+    body = client.post(
+        "/services",
+        json={
+            "name": "billing-callback",
+            "team": "payments",
+            "runtime": "python",
+            "environment": "dev",
+            "idempotency_key": "render-1",
+        },
+    ).json()
+    repository = tmp_path / body["artifacts"]["repository"]
+    source = (repository / "app" / "main.py").read_text()
+    dockerfile = (repository / "Dockerfile").read_text()
+    values = (tmp_path / body["artifacts"]["helm_values"]).read_text()
+    assert 'service": "billing-callback"' in source or '"service": "billing-callback"' in source
+    assert "__SERVICE_NAME__" not in source
+    assert ":latest" not in dockerfile
+    assert 'tag: "0.1.0"' in values
+    assert (tmp_path / body["artifacts"]["gitops_application"]).exists()
+
+
 def test_unknown_id_is_404(tmp_path):
     client = client_for(tmp_path)
     assert client.get("/services/svc-missing").status_code == 404

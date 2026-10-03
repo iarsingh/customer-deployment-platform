@@ -5,6 +5,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
+from app.generate import render_service
 from app.store import Store
 from app.validate import refusals_for
 
@@ -69,7 +70,8 @@ def create_app(data_dir: Path | None = None, portal_dir: Path | None = None) -> 
         )
         if reasons:
             raise HTTPException(status_code=422, detail=row)
-        return row
+        artifacts = render_service(row, app.state.store.path.parent)
+        return app.state.store.update(row["id"], {"artifacts": artifacts})
 
     return app
 

@@ -39,3 +39,12 @@ class Store:
         rows.append(stored)
         self._write(rows)
         return stored
+
+    def update(self, request_id: str, changes: dict) -> dict:
+        rows = self._read()
+        for index, row in enumerate(rows):
+            if row["id"] == request_id:
+                rows[index] = {**row, **changes}
+                self._write(rows)
+                return rows[index]
+        raise KeyError(request_id)

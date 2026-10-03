@@ -55,7 +55,16 @@ PYTHONPATH=platform-api pytest platform-api/tests
 
 `POST /services` accepts `dev` and `staging` for `runtime=python`. `prod` is stored and returned as HTTP 422. The same `idempotency_key` returns the original decision.
 
-`scripts/kind-up.sh` creates an optional kind or k3d cluster and is not part of the laptop metric.
+`scripts/kind-up.sh` creates an optional kind or k3d cluster and is not part of the laptop metric. `scripts/install-argocd.sh` installs a pinned Argo CD into that cluster.
+
+An accepted request renders a repository, Helm values, and an Argo CD Application under the data directory. Check the local infrastructure without a cloud login:
+
+```bash
+terraform fmt -check -recursive terraform
+terraform -chdir=terraform/environments/local init -backend=false
+terraform -chdir=terraform/environments/local validate
+helm template billing-callback helm/service -f helm/service/values.yaml
+```
 
 ## Layout
 

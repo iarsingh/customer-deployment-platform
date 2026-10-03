@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: billing-callback
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/iarsingh/customer-deployment-platform
+    targetRevision: main
+    path: helm/service
+    helm:
+      valueFiles:
+        - values.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: payments-dev
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
