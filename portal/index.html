@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Meridian service request</title>
+  <style>
+    body { font-family: Georgia, serif; margin: 2rem auto; max-width: 40rem; color: #1c1917; }
+    label { display: block; margin-top: 0.8rem; }
+    input, select { width: 100%; padding: 0.4rem; margin-top: 0.2rem; }
+    button { margin-top: 1rem; padding: 0.5rem 0.8rem; }
+    pre { background: #f5f5f4; padding: 1rem; overflow: auto; }
+  </style>
+</head>
+<body>
+  <h1>Request a service</h1>
+  <p>Dev and staging only. Production is a pull request, not this form.</p>
+  <form id="request">
+    <label>Service name <input name="name" value="billing-callback" required></label>
+    <label>Team <input name="team" value="payments" required></label>
+    <label>Runtime
+      <select name="runtime">
+        <option value="python">python</option>
+        <option value="go">go</option>
+      </select>
+    </label>
+    <label>Environment
+      <select name="environment">
+        <option value="dev">dev</option>
+        <option value="staging">staging</option>
+        <option value="prod">prod</option>
+      </select>
+    </label>
+    <label>Idempotency key <input name="idempotency_key" value="portal-1"></label>
+    <button type="submit">Submit</button>
+  </form>
+  <pre id="result">No request yet.</pre>
+  <script>
+    const form = document.getElementById("request");
+    const result = document.getElementById("result");
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const data = Object.fromEntries(new FormData(form).entries());
+      data.port = 8080;
+      const response = await fetch("/services", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(data)
+      });
+      const body = await response.json();
+      result.textContent = JSON.stringify(body.detail || body, null, 2);
+    });
+  </script>
+</body>
+</html>

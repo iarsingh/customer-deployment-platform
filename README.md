@@ -41,9 +41,21 @@ The platform renders those boxes. It does not apply them. Argo CD is the only wr
 
 Read [docs/customer-scenario.md](docs/customer-scenario.md) before the code. The constraint that deleted the "Apply" button is in that file.
 
-## Local entrypoints
+## Run the API
 
-GCP is not required. `scripts/dev-up.sh` starts the API once it exists. `scripts/kind-up.sh` creates an optional kind or k3d cluster and is not part of the laptop metric.
+GCP is not required.
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r platform-api/requirements.txt
+PYTHONPATH=platform-api pytest platform-api/tests
+./scripts/dev-up.sh
+```
+
+`POST /services` accepts `dev` and `staging` for `runtime=python`. `prod` is stored and returned as HTTP 422. The same `idempotency_key` returns the original decision.
+
+`scripts/kind-up.sh` creates an optional kind or k3d cluster and is not part of the laptop metric.
 
 ## Layout
 
