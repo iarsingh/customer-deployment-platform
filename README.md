@@ -104,3 +104,13 @@ policies/        Kyverno policies and the local checker
 monitoring/      Prometheus scrape and a Grafana dashboard
 demo/            the two-minute walk and the broken manifest
 ```
+
+## Issues
+
+Five milestones carry the 36 issues: Foundation, Platform API, Deployment Automation, Security and Observability, and Customer Demo. Each issue names the customer impact and the file that closed it.
+
+https://github.com/iarsingh/customer-deployment-platform/issues
+
+## Trade-off to say out loud
+
+A self-service button that runs Terraform would have been shorter to demo and worse for Meridian. Their incident was a laptop apply. The API stops at files. That is the constraint, not a missing feature.
