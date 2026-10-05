@@ -26,7 +26,6 @@ flowchart LR
     M4 -->|imports| M3
     M4 -->|imports| M5
     M4 -->|imports| M6
-    M6 -->|imports| M5
 ```
 
 For Python repositories, arrows show resolved local imports, not network calls or deployment order. Otherwise the diagram is a repository component map; containment arrows do not assert runtime integration.
