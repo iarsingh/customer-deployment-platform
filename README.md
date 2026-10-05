@@ -1,5 +1,52 @@
 # Customer self-service deployment platform
 
+<!-- project-guide:start -->
+## Project guide
+
+[Project architecture](PROJECT_ARCHITECTURE.md) · [Interview questions and answers](INTERVIEW_QA.md)
+
+Use the architecture document for the component diagram, implementation boundaries, and verification entry points. The interview guide includes source-backed answers and project walkthroughs.
+
+### Implementation map
+
+| Component | Responsibility |
+| --- | --- |
+| [`platform-api/app/main.py`](platform-api/app/main.py) | HTTP handlers: `GET /healthz`, `GET /metrics`, `GET /`, `GET /services`, `GET /services/{request_id}` |
+| [`templates/python-service/app/main.py`](templates/python-service/app/main.py) | HTTP handlers: `GET /healthz`, `GET /readyz` |
+| [`platform-api/app/generate.py`](platform-api/app/generate.py) | Functions: `_fill`, `render_service` |
+| [`policies/check_policy.py`](policies/check_policy.py) | Functions: `check_documents`, `main` |
+| [`platform-api/app/validate.py`](platform-api/app/validate.py) | Functions: `_name_ok`, `refusals_for` |
+| [`platform-api/app/store.py`](platform-api/app/store.py) | Functions: `__init__`, `_read`, `_write`, `find_by_key`, `get`, `list`, `add` |
+| [`platform-api/requirements.txt`](platform-api/requirements.txt) | Implementation or supporting configuration |
+| [`templates/python-service/requirements.txt`](templates/python-service/requirements.txt) | Implementation or supporting configuration |
+| [`terraform/environments/local/main.tf`](terraform/environments/local/main.tf) | Terraform resource/module declarations |
+| [`terraform/modules/service/main.tf`](terraform/modules/service/main.tf) | Terraform resource/module declarations |
+| [`terraform/modules/service/outputs.tf`](terraform/modules/service/outputs.tf) | Terraform resource/module declarations |
+| [`terraform/modules/service/variables.tf`](terraform/modules/service/variables.tf) | Terraform resource/module declarations |
+| [`demo/run.sh`](demo/run.sh) | Implementation or supporting configuration |
+| [`demo/run_demo.py`](demo/run_demo.py) | Functions: `main` |
+| [`scripts/dev-up.sh`](scripts/dev-up.sh) | Implementation or supporting configuration |
+| [`scripts/install-argocd.sh`](scripts/install-argocd.sh) | Implementation or supporting configuration |
+| [`scripts/kind-up.sh`](scripts/kind-up.sh) | Implementation or supporting configuration |
+| [`scripts/simulate-failure.sh`](scripts/simulate-failure.sh) | Implementation or supporting configuration |
+| [`platform-api/app/__init__.py`](platform-api/app/__init__.py) | Implementation or supporting configuration |
+| [`docker-compose.yml`](docker-compose.yml) | Container build/service configuration |
+| [`platform-api/Dockerfile`](platform-api/Dockerfile) | Container build/service configuration |
+| [`templates/python-service/Dockerfile`](templates/python-service/Dockerfile) | Container build/service configuration |
+
+### Local setup and verification
+
+From the repository root (the commands follow the checked-in manifests):
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r platform-api/requirements.txt
+PYTHONPATH=platform-api python -m pytest platform-api/tests -q
+```
+
+<!-- project-guide:end -->
+
 Meridian Labs came with a queue, not a tool request.
 
 > It takes our developers 2–3 days and multiple tickets to deploy a new microservice. We want developers to create a production-ready service without understanding Terraform, Kubernetes, or CI/CD.
