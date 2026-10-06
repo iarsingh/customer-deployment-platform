@@ -1,6 +1,8 @@
 import shutil
 from pathlib import Path
 
+IGNORED_PARTS = {"__pycache__", ".pytest_cache", ".venv", "venv", ".git", "node_modules"}
+
 TEMPLATE_ROOT = Path(__file__).resolve().parents[2] / "templates" / "python-service"
 
 
@@ -21,6 +23,12 @@ def render_service(row: dict, data_dir: Path) -> dict[str, str]:
         if not source.is_file():
             continue
         relative = source.relative_to(TEMPLATE_ROOT)
+        if any(part in IGNORED_PARTS for part in relative.parts) or source.suffix in {".pyc", ".pyo"}:
+            continue
+        if source.name == ".env" or (source.name.startswith(".env.") and source.name != ".env.example"):
+            continue
+        if source.is_symlink():
+            continue
         target = destination / relative
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text(_fill(source.read_text(encoding="utf-8"), row), encoding="utf-8")

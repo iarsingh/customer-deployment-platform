@@ -16,7 +16,7 @@ jobs:
       - name: Test the platform API
         run: |
           python -m pip install -r platform-api/requirements.txt
-          PYTHONPATH=platform-api pytest platform-api/tests -q
+          PYTHONPATH=platform-api:. pytest platform-api/tests -q
 
   template:
     runs-on: ubuntu-latest
